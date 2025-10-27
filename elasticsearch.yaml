@@ -2,23 +2,28 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: elasticsearch
+  namespace: logging
 spec:
-  serviceName: es-svc
+  serviceName: elasticsearch
   replicas: 1
   selector:
     matchLabels:
-      app: elasticsearch
+      app: elk-stack
   template:
     metadata:
       labels:
-        app: elasticsearch
+        app: elk-stack
     spec:
       containers:
-        - name: es
+        - name: elasticsearch
           image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
           env:
             - name: discovery.type
               value: single-node
+            - name: xpack.security.enabled
+              value: "false"
+            - name: xpack.security.http.ssl.enabled
+              value: "false"
             - name: ES_JAVA_OPTS
               value: "-Xms256m -Xmx256m"
           ports:
@@ -34,9 +39,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: elasticsearch
+  namespace: logging
 spec:
   selector:
-    app: elasticsearch
+    app: elk-stack
   ports:
     - port: 9200
-      targetPort: 9200 
+      targetPort: 9200
