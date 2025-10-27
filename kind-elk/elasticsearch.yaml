@@ -5,7 +5,7 @@ metadata:
   namespace: logging
 data:
   elasticsearch.yml: |
-    cluster.name: elk-cluster
+    cluster.name: "kind-elk"
     network.host: 0.0.0.0
     discovery.type: single-node
     xpack.security.enabled: false
@@ -20,18 +20,20 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: elk-stack
+      app: elasticsearch
   template:
     metadata:
       labels:
-        app: elk-stack
+        app: elasticsearch
     spec:
       containers:
         - name: elasticsearch
           image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
           env:
             - name: ES_JAVA_OPTS
-              value: "-Xms256m -Xmx256m"
+              value: "-Xms512m -Xmx512m"
+          ports:
+            - containerPort: 9200
           volumeMounts:
             - name: data
               mountPath: /usr/share/elasticsearch/data
@@ -52,7 +54,8 @@ metadata:
   namespace: logging
 spec:
   selector:
-    app: elk-stack
+    app: elasticsearch
   ports:
     - port: 9200
       targetPort: 9200
+      protocol: TCP
