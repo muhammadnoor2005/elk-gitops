@@ -2,15 +2,16 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kibana
+  namespace: logging
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kibana
+      app: elk-stack
   template:
     metadata:
       labels:
-        app: kibana
+        app: elk-stack
     spec:
       containers:
         - name: kibana
@@ -18,16 +19,35 @@ spec:
           env:
             - name: ELASTICSEARCH_HOSTS
               value: http://elasticsearch:9200
+            - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
+              value: none
+            - name: SERVER_PUBLICBASEURL
+              value: http://localhost:5601
           ports:
             - containerPort: 5601
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: 5601
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: /api/status
+              port: 5601
+            initialDelaySeconds: 60
+            periodSeconds: 10 irrevers
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: kibana
+  namespace: logging
 spec:
   selector:
-    app: kibana
+    app: elk-stack
   ports:
     - port: 5601
       targetPort: 5601
