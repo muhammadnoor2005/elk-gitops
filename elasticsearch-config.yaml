@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elasticsearch-config
+  namespace: logging
+data:
+  elasticsearch.yml: |
+    cluster.name: elk-cluster
+    network.host: 0.0.0.0
+    discovery.type: single-node
+    xpack.security.enabled: false
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -18,20 +30,20 @@ spec:
         - name: elasticsearch
           image: docker.elastic.co/elasticsearch/elasticsearch:8.11.3
           env:
-            - name: discovery.type
-              value: single-node
-            - name: xpack.security.enabled
-              value: "false"
             - name: ES_JAVA_OPTS
               value: "-Xms256m -Xmx256m"
-          ports:
-            - containerPort: 9200
           volumeMounts:
             - name: data
               mountPath: /usr/share/elasticsearch/data
+            - name: config
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              subPath: elasticsearch.yml
       volumes:
         - name: data
           emptyDir: {}
+        - name: config
+          configMap:
+            name: elasticsearch-config
 ---
 apiVersion: v1
 kind: Service
