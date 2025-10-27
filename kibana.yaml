@@ -21,6 +21,12 @@ spec:
               value: http://elasticsearch:9200
             - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
               value: none
+            - name: XPACK_SECURITY_ENABLED
+              value: "false"
+            - name: ELASTICSEARCH_USERNAME
+              value: "kibana_system"
+            - name: ELASTICSEARCH_PASSWORD
+              value: "kibana"
           ports:
             - containerPort: 5601
           readinessProbe:

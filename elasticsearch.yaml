@@ -28,6 +28,12 @@ spec:
               value: "false"
             - name: ES_JAVA_OPTS
               value: "-Xms256m -Xmx256m"
+            - name: network.host
+              value: "0.0.0.0"
+            - name: http.cors.enabled
+              value: "true"
+            - name: http.cors.allow-origin
+              value: "*"
           ports:
             - containerPort: 9200
           volumeMounts:
