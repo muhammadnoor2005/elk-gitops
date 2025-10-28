@@ -8,13 +8,24 @@ data:
     input {
       tcp {
         port => 5514
-        codec => "json_lines"
+        codec => json_lines
       }
-      stdin { }
+      stdin { 
+        codec => json_lines
+      }
     }
+    
+    filter {
+      date {
+        match => [ "@timestamp", "ISO8601" ]
+        target => "@timestamp"
+      }
+    }
+
     output {
       elasticsearch {
         hosts => ["http://elasticsearch:9200"]
+        index => "app-logs-%{+YYYY.MM.dd}"
         # If you later enable security, add user/password here
       }
       stdout { codec => rubydebug }
