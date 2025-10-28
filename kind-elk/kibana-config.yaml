@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-config
+  namespace: logging
+data:
+  kibana.yml: |
+    server.name: kibana
+    server.host: "0.0.0.0"
+    elasticsearch.hosts: [ "http://elasticsearch:9200" ]
+
+    # --- enable observability with WebSocket log stream ---
+    xpack.observability.enabled: true
+    xpack.observability.logStream.enabled: true
+    xpack.observability.logs.enabled: true
